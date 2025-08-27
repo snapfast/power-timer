@@ -1,6 +1,7 @@
 # Build directories
 build/
 builddir/
+release/
 
 # Compiled Object Files
 *.o
