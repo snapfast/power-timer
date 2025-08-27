@@ -10,6 +10,7 @@ typedef struct {
     GtkWidget *countdown_label;
     GtkWidget *start_button;
     GtkWidget *cancel_button;
+    GtkWidget *sound_switch;
     guint timer_id;
     int remaining_seconds;
     gboolean is_counting;
@@ -24,13 +25,28 @@ static gboolean update_countdown(gpointer user_data) {
         return G_SOURCE_REMOVE;
     }
     
-    // Play sound notification in the last minute (60 seconds)
-    if (app->remaining_seconds <= 60 && !app->sound_played) {
-        // Try multiple sound methods for compatibility
-        system("paplay /usr/share/sounds/alsa/Front_Left.wav 2>/dev/null || "
-               "aplay /usr/share/sounds/alsa/Front_Left.wav 2>/dev/null || "
-               "speaker-test -t sine -f 1000 -l 1 2>/dev/null || "
-               "echo -e '\\a' || true");
+    // Play sound notification in the last minute (60 seconds) if enabled
+    if (app->remaining_seconds <= 60 && !app->sound_played && 
+        gtk_switch_get_active(GTK_SWITCH(app->sound_switch))) {
+        // Play notification sound 3 times for emphasis
+        system("(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
+               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
+               "printf '\\a') && sleep 0.3 && "
+               "(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
+               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
+               "printf '\\a') && sleep 0.3 && "
+               "(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
+               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
+               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
+               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
+               "printf '\\a') || true");
         app->sound_played = TRUE;
     }
     
@@ -162,8 +178,18 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     gtk_widget_set_valign(app_data->minute_spin, GTK_ALIGN_CENTER);
     adw_action_row_add_suffix(ADW_ACTION_ROW(minute_row), app_data->minute_spin);
     
+    GtkWidget *sound_row = adw_action_row_new();
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(sound_row), "Timer Ending Alert");
+    adw_action_row_set_subtitle(ADW_ACTION_ROW(sound_row), "Play sound notification in the last minute");
+    
+    app_data->sound_switch = gtk_switch_new();
+    gtk_switch_set_active(GTK_SWITCH(app_data->sound_switch), TRUE);
+    gtk_widget_set_valign(app_data->sound_switch, GTK_ALIGN_CENTER);
+    adw_action_row_add_suffix(ADW_ACTION_ROW(sound_row), app_data->sound_switch);
+    
     adw_preferences_group_add(ADW_PREFERENCES_GROUP(time_group), hour_row);
     adw_preferences_group_add(ADW_PREFERENCES_GROUP(time_group), minute_row);
+    adw_preferences_group_add(ADW_PREFERENCES_GROUP(time_group), sound_row);
     gtk_box_append(GTK_BOX(main_box), time_group);
     
     GtkWidget *countdown_group = adw_preferences_group_new();
