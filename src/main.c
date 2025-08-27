@@ -1,4 +1,4 @@
-#include "timed_shutdown.h"
+#include "power_timer.h"
 
 static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     AppData *app_data = g_new0(AppData, 1);

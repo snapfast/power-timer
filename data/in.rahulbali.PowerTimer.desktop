@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Power Timer
 Comment=Schedule system power actions with countdown timer
-Exec=timed-shutdown
-Icon=timed-shutdown
+Exec=power-timer
+Icon=power-timer
 Terminal=false
 Type=Application
 Categories=System;Utility;

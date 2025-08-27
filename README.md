@@ -33,13 +33,13 @@ A modern GNOME application that schedules system power actions with a countdown 
 1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/power-timer/releases)
 2. **Extract** and install:
    ```bash
-   tar -xzf timed-shutdown-2.0.0-linux-x86_64.tar.gz
-   cd timed-shutdown-2.0.0
+   tar -xzf power-timer-2.1.1-linux-x86_64.tar.gz
+   cd power-timer-2.1.1
    ./install.sh  # User install
    # OR
    sudo ./install.sh  # System-wide install
    ```
-3. **Launch** from applications menu or run `timed-shutdown`
+3. **Launch** from applications menu or run `power-timer`
 
 ### Build from Source
 
@@ -144,7 +144,7 @@ power-timer/
 │   ├── timer.c         # Timer logic and controls
 │   ├── sound.c         # System sound integration
 │   ├── power.c         # Power action execution
-│   └── timed_shutdown.h # Header with shared definitions
+│   └── power_timer.h # Header with shared definitions
 ├── data/               # Desktop file and resources
 ├── meson.build         # Build configuration  
 ├── build.sh           # Development build script

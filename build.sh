@@ -19,5 +19,5 @@ meson setup . ..
 # Build the application
 ninja
 
-echo "Build complete! Run './build/timed-shutdown' to start the application."
+echo "Build complete! Run './build/power-timer' to start the application."
 echo "To install system-wide, run 'sudo ninja install' from the build directory."

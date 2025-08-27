@@ -1,4 +1,4 @@
-#include "timed_shutdown.h"
+#include "power_timer.h"
 
 gboolean update_countdown(gpointer user_data) {
     AppData *app = (AppData *)user_data;

@@ -6,7 +6,7 @@
 set -e
 
 VERSION=${1:-"1.0.0"}
-APP_NAME="timed-shutdown"
+APP_NAME="power-timer"
 RELEASE_DIR="release"
 
 echo "Building Power Timer v${VERSION} for release..."
@@ -43,7 +43,7 @@ cp build/$APP_NAME "$RELEASE_DIR/$APP_NAME-$VERSION/"
 
 # Copy documentation and metadata
 cp README.md "$RELEASE_DIR/$APP_NAME-$VERSION/"
-cp data/in.rahulbali.TimedShutdown.desktop "$RELEASE_DIR/$APP_NAME-$VERSION/"
+cp data/in.rahulbali.PowerTimer.desktop "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp build.sh "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp meson.build "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp -r src "$RELEASE_DIR/$APP_NAME-$VERSION/"
@@ -57,8 +57,8 @@ cat > "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh" << 'EOF'
 
 set -e
 
-APP_NAME="timed-shutdown"
-DESKTOP_FILE="data/in.rahulbali.TimedShutdown.desktop"
+APP_NAME="power-timer"
+DESKTOP_FILE="data/in.rahulbali.PowerTimer.desktop"
 
 echo "Installing Power Timer..."
 
@@ -87,12 +87,12 @@ cp "$APP_NAME" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/$APP_NAME"
 
 # Create desktop file with full path for desktop app integration
-cat > "$DESKTOP_DIR/in.rahulbali.TimedShutdown.desktop" << DESKTOP_EOF
+cat > "$DESKTOP_DIR/in.rahulbali.PowerTimer.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Power Timer
 Comment=Schedule system power actions with countdown timer
 Exec=$INSTALL_DIR/$APP_NAME
-Icon=timed-shutdown
+Icon=power-timer
 Terminal=false
 Type=Application
 Categories=System;Utility;
@@ -100,7 +100,7 @@ Keywords=power;timer;shutdown;restart;schedule;
 DESKTOP_EOF
 
 # Copy icon file
-cp "data/timed-shutdown.svg" "$ICON_DIR/"
+cp "data/power-timer.svg" "$ICON_DIR/"
 
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then

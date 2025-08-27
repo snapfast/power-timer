@@ -1,4 +1,4 @@
-#include "timed_shutdown.h"
+#include "power_timer.h"
 
 static gboolean on_key_pressed(GtkEventControllerKey *controller G_GNUC_UNUSED,
                               guint keyval, guint keycode G_GNUC_UNUSED, 

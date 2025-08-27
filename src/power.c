@@ -1,4 +1,4 @@
-#include "timed_shutdown.h"
+#include "power_timer.h"
 
 void execute_power_action(const char *action_type, const char *command) {
     int result = system(command);
