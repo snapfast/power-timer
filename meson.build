@@ -19,3 +19,7 @@ install_data('data/in.rahulbali.TimedShutdown.desktop',
 install_data('data/timed-shutdown.svg',
   install_dir : join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps')
 )
+
+install_data('data/mixkit-forest-birds-singing-1212.wav',
+  install_dir : join_paths(get_option('datadir'), 'timed-shutdown')
+)

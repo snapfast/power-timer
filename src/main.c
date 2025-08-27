@@ -3,6 +3,66 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define SOUND_FILE_NAME "mixkit-forest-birds-singing-1212.wav"
+
+static char* get_sound_file_path(void) {
+    const char* possible_paths[] = {
+        "/usr/share/timed-shutdown/" SOUND_FILE_NAME,
+        "/usr/local/share/timed-shutdown/" SOUND_FILE_NAME,
+        "data/" SOUND_FILE_NAME,
+        SOUND_FILE_NAME
+    };
+    
+    for (size_t i = 0; i < sizeof(possible_paths) / sizeof(possible_paths[0]); i++) {
+        if (access(possible_paths[i], F_OK) == 0) {
+            return g_strdup(possible_paths[i]);
+        }
+    }
+    
+    // If no file found, return the installed path as fallback
+    return g_strdup("/usr/share/timed-shutdown/" SOUND_FILE_NAME);
+}
+
+static void execute_power_action(const char *action_type, const char *command) {
+    int result = system(command);
+    
+    if (result != 0) {
+        // Command failed, could show an error dialog here if needed
+        // For now, just continue - the system call failure might be expected in some cases
+        g_warning("Power action command failed with exit code: %d", result);
+    }
+}
+
+static void on_power_action_response(GtkDialog *dialog, int response_id, gpointer user_data) {
+    char *command = (char *)user_data;
+    
+    if (response_id == GTK_RESPONSE_YES) {
+        execute_power_action("", command);
+    }
+    
+    gtk_window_destroy(GTK_WINDOW(dialog));
+    g_free(command);
+}
+
+static void show_power_action_confirmation(GtkWidget *parent_window, const char *action_name, const char *command) {
+    char *message = g_strdup_printf("The timer has expired.\n\nProceed with %s?", action_name);
+    
+    GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(parent_window),
+                                              GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                              GTK_MESSAGE_QUESTION,
+                                              GTK_BUTTONS_YES_NO,
+                                              "%s", message);
+    
+    gtk_window_set_title(GTK_WINDOW(dialog), "Confirm Action");
+    
+    char *command_copy = g_strdup(command);
+    g_signal_connect(dialog, "response", G_CALLBACK(on_power_action_response), command_copy);
+    
+    gtk_window_present(GTK_WINDOW(dialog));
+    
+    g_free(message);
+}
+
 typedef struct {
     GtkWidget *window;
     GtkWidget *hour_spin;
@@ -26,13 +86,13 @@ static gboolean update_countdown(gpointer user_data) {
         // Get selected action from view switcher
         const char *selected_page = adw_view_stack_get_visible_child_name(ADW_VIEW_STACK(app->action_view_stack));
         if (g_strcmp0(selected_page, "shutdown") == 0) {
-            system("systemctl poweroff");
+            show_power_action_confirmation(app->window, "shutdown", "systemctl poweroff");
         } else if (g_strcmp0(selected_page, "restart") == 0) {
-            system("systemctl reboot");
+            show_power_action_confirmation(app->window, "restart", "systemctl reboot");
         } else if (g_strcmp0(selected_page, "logoff") == 0) {
-            system("loginctl terminate-user $USER");
+            show_power_action_confirmation(app->window, "log off", "loginctl terminate-user $USER");
         } else {
-            system("systemctl poweroff"); // Default fallback
+            show_power_action_confirmation(app->window, "shutdown", "systemctl poweroff"); // Default fallback
         }
         return G_SOURCE_REMOVE;
     }
@@ -40,19 +100,34 @@ static gboolean update_countdown(gpointer user_data) {
     // Play sound notification in the last minute (60 seconds) if enabled
     if (app->remaining_seconds <= 60 && !app->sound_played && 
         gtk_switch_get_active(GTK_SWITCH(app->sound_switch))) {
-        // Play bird sound notification 3 times for emphasis
-        system("(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "printf '\\a') && sleep 0.5 && "
-               "(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "printf '\\a') && sleep 0.5 && "
-               "(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
-               "printf '\\a') || true");
+        // Get the sound file path
+        char *sound_path = get_sound_file_path();
+        
+        // Create command to play sound notification 3 times
+        char *sound_cmd = g_strdup_printf(
+            "(paplay '%s' 2>/dev/null || "
+            "aplay '%s' 2>/dev/null || "
+            "mpv --no-video --volume=50 '%s' 2>/dev/null || "
+            "printf '\\a') && sleep 0.5 && "
+            "(paplay '%s' 2>/dev/null || "
+            "aplay '%s' 2>/dev/null || "
+            "mpv --no-video --volume=50 '%s' 2>/dev/null || "
+            "printf '\\a') && sleep 0.5 && "
+            "(paplay '%s' 2>/dev/null || "
+            "aplay '%s' 2>/dev/null || "
+            "mpv --no-video --volume=50 '%s' 2>/dev/null || "
+            "printf '\\a') || true",
+            sound_path, sound_path, sound_path,
+            sound_path, sound_path, sound_path,
+            sound_path, sound_path, sound_path);
+            
+        int result = system(sound_cmd);
+        if (result != 0) {
+            g_warning("Sound notification command failed with exit code: %d", result);
+        }
+        
+        g_free(sound_path);
+        g_free(sound_cmd);
         app->sound_played = TRUE;
     }
     
@@ -75,6 +150,19 @@ static void on_start_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_data
     if (!app->is_counting) {
         int hours = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app->hour_spin));
         int minutes = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app->minute_spin));
+        
+        // Validate that at least some time is set
+        if (hours == 0 && minutes == 0) {
+            GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(app->window),
+                                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                      GTK_MESSAGE_WARNING,
+                                                      GTK_BUTTONS_OK,
+                                                      "Please set at least 1 minute for the timer.");
+            gtk_window_present(GTK_WINDOW(dialog));
+            g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), NULL);
+            return;
+        }
+        
         app->remaining_seconds = (hours * 3600) + (minutes * 60);
         app->is_counting = TRUE;
         app->sound_played = FALSE;
@@ -111,6 +199,16 @@ static void on_cancel_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_dat
     gtk_button_set_label(GTK_BUTTON(app->start_button), "Start");
     gtk_widget_set_sensitive(app->cancel_button, FALSE);
     gtk_label_set_text(GTK_LABEL(app->countdown_label), "00:00:00");
+}
+
+static void on_window_destroy(GtkWidget *widget G_GNUC_UNUSED, gpointer user_data) {
+    AppData *app = (AppData *)user_data;
+    
+    if (app->is_counting && app->timer_id > 0) {
+        g_source_remove(app->timer_id);
+    }
+    
+    g_free(app);
 }
 
 static gboolean on_key_pressed(GtkEventControllerKey *controller G_GNUC_UNUSED,
@@ -198,9 +296,14 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     GtkWidget *restart_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     GtkWidget *logoff_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     
-    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), shutdown_page, "shutdown", "Shutdown");
-    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), restart_page, "restart", "Restart");
-    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), logoff_page, "logoff", "Log off");
+    AdwViewStackPage *shutdown_stack_page = adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), shutdown_page, "shutdown", "Shutdown");
+    AdwViewStackPage *restart_stack_page = adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), restart_page, "restart", "Restart");
+    AdwViewStackPage *logoff_stack_page = adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), logoff_page, "logoff", "Log off");
+    
+    // Set icons for the view switcher pages
+    adw_view_stack_page_set_icon_name(shutdown_stack_page, "system-shutdown-symbolic");
+    adw_view_stack_page_set_icon_name(restart_stack_page, "system-reboot-symbolic");
+    adw_view_stack_page_set_icon_name(logoff_stack_page, "system-log-out-symbolic");
     
     adw_view_stack_set_visible_child_name(ADW_VIEW_STACK(app_data->action_view_stack), "shutdown"); // Default to shutdown
     
@@ -278,6 +381,7 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     
     g_signal_connect(app_data->start_button, "clicked", G_CALLBACK(on_start_clicked), app_data);
     g_signal_connect(app_data->cancel_button, "clicked", G_CALLBACK(on_cancel_clicked), app_data);
+    g_signal_connect(app_data->window, "destroy", G_CALLBACK(on_window_destroy), app_data);
     
     // Keyboard shortcuts
     GtkEventController *key_controller = gtk_event_controller_key_new();

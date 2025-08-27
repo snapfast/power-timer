@@ -3,20 +3,24 @@
 A modern GNOME application that schedules system shutdown with a countdown timer. Built with GTK4 and Libadwaita for a clean, native desktop experience.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-1.0.3-green.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
 ## Features
 
 - **Modern UI**: Clean GTK4 + Libadwaita interface designed for GNOME
-- **Flexible Timer**: Set shutdown time from 1 minute to 23 hours 59 minutes
+- **Multiple Power Actions**: Choose between shutdown, restart, or log off with visual icons
+- **Flexible Timer**: Set timer from 1 minute to 23 hours 59 minutes
 - **Real-time Countdown**: Live HH:MM:SS display with large, easy-to-read text
 - **Full Control**: Start, pause, resume, and cancel operations
+- **Sound Notifications**: Optional audio alert in the final minute before action
+- **Safety Confirmations**: Final confirmation dialog before executing power actions
+- **Input Validation**: Prevents invalid timer settings (e.g., 0 hours and 0 minutes)
 - **Keyboard Shortcuts**: 
   - `Ctrl+Enter`: Start/pause timer
   - `Esc`: Cancel timer  
   - `Ctrl+Q/W`: Quit application
-- **Safe Shutdown**: Uses `systemctl poweroff` for clean system shutdown
+- **Safe Operations**: Uses systemd commands (`systemctl`, `loginctl`) for clean system actions
 
 ## Quick Install
 
@@ -25,8 +29,8 @@ A modern GNOME application that schedules system shutdown with a countdown timer
 1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/timed-shutdown/releases)
 2. **Extract** and install:
    ```bash
-   tar -xzf timed-shutdown-1.0.3-linux-x86_64.tar.gz
-   cd timed-shutdown-1.0.3
+   tar -xzf timed-shutdown-1.1.0-linux-x86_64.tar.gz
+   cd timed-shutdown-1.1.0
    ./install.sh  # User install
    # OR
    sudo ./install.sh  # System-wide install
@@ -67,10 +71,13 @@ sudo ninja install
 ## Usage
 
 ### Basic Operation
-1. **Set Time**: Use the hour and minute spinboxes to set your desired shutdown time
-2. **Start Timer**: Click "Start" to begin the countdown
-3. **Monitor**: Watch the real-time countdown in HH:MM:SS format
-4. **Control**: Use "Pause"/"Resume" to pause/continue, or "Cancel" to abort
+1. **Set Time**: Use the hour and minute spinboxes to set your desired timer duration
+2. **Choose Action**: Select shutdown, restart, or log off from the power action switcher
+3. **Configure Sound** (Optional): Toggle the sound notification switch for audio alerts
+4. **Start Timer**: Click "Start" to begin the countdown
+5. **Monitor**: Watch the real-time countdown in HH:MM:SS format
+6. **Control**: Use "Pause"/"Resume" to pause/continue, or "Cancel" to abort
+7. **Confirm Action**: When timer expires, confirm the action in the dialog that appears
 
 ### Keyboard Shortcuts
 | Shortcut | Action |
@@ -94,11 +101,17 @@ sudo ninja install
 
 ## Security & Permissions
 
-This application executes `systemctl poweroff` to shutdown your system. Ensure you have appropriate permissions:
+This application executes system commands to perform power actions:
+- **Shutdown**: `systemctl poweroff`
+- **Restart**: `systemctl reboot`
+- **Log off**: `loginctl terminate-user $USER`
 
-- **User install**: Your user account should be able to shutdown the system
+Ensure you have appropriate permissions:
+
+- **User install**: Your user account should be able to perform these system operations
 - **Groups**: You may need to be in `sudo` or `wheel` group depending on your distribution
-- **PolicyKit**: Modern systems use PolicyKit for shutdown permissions
+- **PolicyKit**: Modern systems use PolicyKit for power management permissions
+- **Safety**: All actions require final user confirmation before execution
 
 ## Development
 
