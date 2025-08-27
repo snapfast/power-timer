@@ -125,14 +125,15 @@ GtkWidget* create_ui(AppData *app_data, AdwApplication *app) {
     
     GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_data(provider, 
-        ".display-1 { font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Courier New', monospace; font-size: 6em; font-weight: bold; }\n"
+        ".display-1 { font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Courier New', monospace; font-size: 6em; font-weight: bold; color: #1a1a1a; }\n"
         "button { font-size: 1.2em; font-weight: 500; }\n"
         "spinbutton { font-size: 1.3em; }\n"
-        ".preferences-group > .header .title { font-size: 1.3em; font-weight: 600; }\n"
-        ".preferences-group > .header .description { font-size: 1.1em; }\n"
-        "row.activatable .title { font-size: 1.2em; font-weight: 500; }\n"
+        ".preferences-group > .header .title { font-size: 1.3em; font-weight: 600; color: #1a1a1a; }\n"
+        ".preferences-group > .header .description { font-size: 1.1em; color: #1a1a1a; }\n"
+        "row.activatable .title { font-size: 1.2em; font-weight: 500; color: #1a1a1a; }\n"
         "headerbar { min-height: 60px; }\n"
-        "headerbar .title { font-size: 1.3em; font-weight: 600; }", -1);
+        "headerbar .title { font-size: 1.3em; font-weight: 600; color: #1a1a1a; }\n"
+        "label { color: #1a1a1a; }", -1);
     gtk_style_context_add_provider_for_display(
         gtk_widget_get_display(app_data->countdown_label),
         GTK_STYLE_PROVIDER(provider),
