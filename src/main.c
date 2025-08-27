@@ -11,6 +11,8 @@ typedef struct {
     GtkWidget *start_button;
     GtkWidget *cancel_button;
     GtkWidget *sound_switch;
+    GtkWidget *action_view_stack;
+    GtkWidget *action_switcher;
     guint timer_id;
     int remaining_seconds;
     gboolean is_counting;
@@ -21,31 +23,35 @@ static gboolean update_countdown(gpointer user_data) {
     AppData *app = (AppData *)user_data;
     
     if (app->remaining_seconds <= 0) {
-        system("systemctl poweroff");
+        // Get selected action from view switcher
+        const char *selected_page = adw_view_stack_get_visible_child_name(ADW_VIEW_STACK(app->action_view_stack));
+        if (g_strcmp0(selected_page, "shutdown") == 0) {
+            system("systemctl poweroff");
+        } else if (g_strcmp0(selected_page, "restart") == 0) {
+            system("systemctl reboot");
+        } else if (g_strcmp0(selected_page, "logoff") == 0) {
+            system("loginctl terminate-user $USER");
+        } else {
+            system("systemctl poweroff"); // Default fallback
+        }
         return G_SOURCE_REMOVE;
     }
     
     // Play sound notification in the last minute (60 seconds) if enabled
     if (app->remaining_seconds <= 60 && !app->sound_played && 
         gtk_switch_get_active(GTK_SWITCH(app->sound_switch))) {
-        // Play notification sound 3 times for emphasis
-        system("(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
-               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
-               "printf '\\a') && sleep 0.3 && "
-               "(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
-               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
-               "printf '\\a') && sleep 0.3 && "
-               "(paplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || "
-               "paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga 2>/dev/null || "
-               "aplay /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || "
-               "speaker-test -t sine -f 1200 -l 1 2>/dev/null || "
+        // Play bird sound notification 3 times for emphasis
+        system("(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "printf '\\a') && sleep 0.5 && "
+               "(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "printf '\\a') && sleep 0.5 && "
+               "(paplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "aplay data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
+               "mpv --no-video --volume=50 data/mixkit-forest-birds-singing-1212.wav 2>/dev/null || "
                "printf '\\a') || true");
         app->sound_played = TRUE;
     }
@@ -75,6 +81,7 @@ static void on_start_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_data
         
         gtk_widget_set_sensitive(app->hour_spin, FALSE);
         gtk_widget_set_sensitive(app->minute_spin, FALSE);
+        gtk_widget_set_sensitive(app->action_switcher, FALSE);
         gtk_button_set_label(GTK_BUTTON(app->start_button), "Pause");
         gtk_widget_set_sensitive(app->cancel_button, TRUE);
         
@@ -100,6 +107,7 @@ static void on_cancel_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_dat
     
     gtk_widget_set_sensitive(app->hour_spin, TRUE);
     gtk_widget_set_sensitive(app->minute_spin, TRUE);
+    gtk_widget_set_sensitive(app->action_switcher, TRUE);
     gtk_button_set_label(GTK_BUTTON(app->start_button), "Start");
     gtk_widget_set_sensitive(app->cancel_button, FALSE);
     gtk_label_set_text(GTK_LABEL(app->countdown_label), "00:00:00");
@@ -178,6 +186,30 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     gtk_widget_set_valign(app_data->minute_spin, GTK_ALIGN_CENTER);
     adw_action_row_add_suffix(ADW_ACTION_ROW(minute_row), app_data->minute_spin);
     
+    GtkWidget *action_group = adw_preferences_group_new();
+    adw_preferences_group_set_title(ADW_PREFERENCES_GROUP(action_group), "Power Action");
+    
+    app_data->action_view_stack = adw_view_stack_new();
+    app_data->action_switcher = adw_view_switcher_new();
+    adw_view_switcher_set_stack(ADW_VIEW_SWITCHER(app_data->action_switcher), ADW_VIEW_STACK(app_data->action_view_stack));
+    
+    // Add pages to the view stack (these are just placeholders)
+    GtkWidget *shutdown_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *restart_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *logoff_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    
+    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), shutdown_page, "shutdown", "Shutdown");
+    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), restart_page, "restart", "Restart");
+    adw_view_stack_add_titled(ADW_VIEW_STACK(app_data->action_view_stack), logoff_page, "logoff", "Log off");
+    
+    adw_view_stack_set_visible_child_name(ADW_VIEW_STACK(app_data->action_view_stack), "shutdown"); // Default to shutdown
+    
+    gtk_widget_set_halign(app_data->action_switcher, GTK_ALIGN_CENTER);
+    gtk_widget_set_margin_top(app_data->action_switcher, 12);
+    gtk_widget_set_margin_bottom(app_data->action_switcher, 12);
+    
+    adw_preferences_group_add(ADW_PREFERENCES_GROUP(action_group), app_data->action_switcher);
+    
     GtkWidget *sound_row = adw_action_row_new();
     adw_preferences_row_set_title(ADW_PREFERENCES_ROW(sound_row), "Timer Ending Alert");
     adw_action_row_set_subtitle(ADW_ACTION_ROW(sound_row), "Play sound notification in the last minute");
@@ -191,6 +223,8 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     adw_preferences_group_add(ADW_PREFERENCES_GROUP(time_group), minute_row);
     adw_preferences_group_add(ADW_PREFERENCES_GROUP(time_group), sound_row);
     gtk_box_append(GTK_BOX(main_box), time_group);
+    
+    gtk_box_append(GTK_BOX(main_box), action_group);
     
     GtkWidget *countdown_group = adw_preferences_group_new();
     adw_preferences_group_set_title(ADW_PREFERENCES_GROUP(countdown_group), "Countdown");
