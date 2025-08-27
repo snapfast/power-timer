@@ -1,19 +1,19 @@
-# Timed Shutdown
+# Power Timer
 
-A modern GNOME application that schedules system shutdown with a countdown timer. Built with GTK4 and Libadwaita for a clean, native desktop experience.
+A modern GNOME application that schedules system power actions with a countdown timer. Built with GTK4 and Libadwaita for a clean, native desktop experience.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-1.1.1-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
 ## Features
 
-- **Modern UI**: Clean GTK4 + Libadwaita interface designed for GNOME
-- **Multiple Power Actions**: Choose between shutdown, restart, or log off with visual icons
-- **Flexible Timer**: Set timer from 1 minute to 23 hours 59 minutes
-- **Real-time Countdown**: Live HH:MM:SS display with large, easy-to-read text
+- **Modern Dropdown UI**: Clean GTK4 + Libadwaita interface with modern dropdown selection
+- **Multiple Power Actions**: Choose between shutdown, restart, or log off with dropdown selection
+- **Flexible Timer**: Set timer from 1 minute to 23 hours 59 minutes with horizontal layout
+- **Large Countdown Display**: Live HH:MM:SS display with 6em monospace font (JetBrains Mono/Fira Code)
 - **Full Control**: Start, pause, resume, and cancel operations
-- **Sound Notifications**: Optional audio alert in the final minute before action
+- **System Sound Integration**: Automatic sound notifications using system sounds (no custom files)
 - **Safety Confirmations**: Final confirmation dialog before executing power actions
 - **Input Validation**: Prevents invalid timer settings (e.g., 0 hours and 0 minutes)
 - **Keyboard Shortcuts**: 
@@ -21,6 +21,8 @@ A modern GNOME application that schedules system shutdown with a countdown timer
   - `Esc`: Cancel timer  
   - `Ctrl+Q/W`: Quit application
 - **Safe Operations**: Uses systemd commands (`systemctl`, `loginctl`) for clean system actions
+- **Compact Interface**: Reduced spacing and 480px width for efficient screen usage
+- **User Warning**: Clear notification about closing the app canceling the timer
 
 ## Quick Install
 
@@ -29,8 +31,8 @@ A modern GNOME application that schedules system shutdown with a countdown timer
 1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/timed-shutdown/releases)
 2. **Extract** and install:
    ```bash
-   tar -xzf timed-shutdown-1.1.1-linux-x86_64.tar.gz
-   cd timed-shutdown-1.1.1
+   tar -xzf timed-shutdown-2.0.0-linux-x86_64.tar.gz
+   cd timed-shutdown-2.0.0
    ./install.sh  # User install
    # OR
    sudo ./install.sh  # System-wide install
@@ -71,12 +73,12 @@ sudo ninja install
 ## Usage
 
 ### Basic Operation
-1. **Set Time**: Use the hour and minute spinboxes to set your desired timer duration
-2. **Choose Action**: Select shutdown, restart, or log off from the power action switcher
-3. **Configure Sound** (Optional): Toggle the sound notification switch for audio alerts
-4. **Start Timer**: Click "Start" to begin the countdown
-5. **Monitor**: Watch the real-time countdown in HH:MM:SS format
-6. **Control**: Use "Pause"/"Resume" to pause/continue, or "Cancel" to abort
+1. **Set Time**: Use the horizontal hour and minute controls to set your desired timer duration
+2. **Choose Action**: Select shutdown, restart, or log off from the dropdown menu
+3. **Start Timer**: Click "Start" to begin the countdown
+4. **Monitor**: Watch the large real-time countdown in HH:MM:SS format with monospace font
+5. **Control**: Use "Pause"/"Resume" to pause/continue, or "Cancel" to abort
+6. **Sound Alert**: Automatic system sound notification in the last minute
 7. **Confirm Action**: When timer expires, confirm the action in the dialog that appears
 
 ### Keyboard Shortcuts
@@ -113,6 +115,17 @@ Ensure you have appropriate permissions:
 - **PolicyKit**: Modern systems use PolicyKit for power management permissions
 - **Safety**: All actions require final user confirmation before execution
 
+## What's New in v2.0.0
+
+- **Application renamed** from "Timed Shutdown" to "Power Timer"
+- **Modern dropdown interface** replacing radio buttons for cleaner selection
+- **Massive countdown display** with monospace font (50% larger at 6em)
+- **Horizontal time input** layout for better space utilization
+- **System sound integration** - no more custom sound files needed
+- **Compact UI design** with reduced spacing and smaller window (480px width)
+- **Warning message** about closing the application
+- **Modular code structure** with separate files for better maintainability
+
 ## Development
 
 ### Creating Releases
@@ -120,16 +133,16 @@ Ensure you have appropriate permissions:
 ./release.sh [version]  # Creates distributable package
 ```
 
-### Documentation Guidelines
-- **No Emojis**: Keep README and release notes professional without emojis
-- **Clean Formatting**: Use standard markdown headers and formatting
-- **Clear Language**: Focus on functionality and technical details
-- **Professional Tone**: Maintain business-appropriate documentation style
-
 ### Project Structure
 ```
 timed-shutdown/
-├── src/main.c           # Main application code
+├── src/
+│   ├── main.c           # Main application entry
+│   ├── ui.c            # User interface creation
+│   ├── timer.c         # Timer logic and controls
+│   ├── sound.c         # System sound integration
+│   ├── power.c         # Power action execution
+│   └── timed_shutdown.h # Header with shared definitions
 ├── data/               # Desktop file and resources
 ├── meson.build         # Build configuration  
 ├── build.sh           # Development build script
