@@ -12,7 +12,7 @@ executable('timed-shutdown',
   install : true
 )
 
-install_data('data/com.example.TimedShutdown.desktop',
+install_data('data/in.rahulbali.TimedShutdown.desktop',
   install_dir : join_paths(get_option('datadir'), 'applications')
 )
 

@@ -43,7 +43,7 @@ cp build/$APP_NAME "$RELEASE_DIR/$APP_NAME-$VERSION/"
 
 # Copy documentation and metadata
 cp README.md "$RELEASE_DIR/$APP_NAME-$VERSION/"
-cp data/com.example.TimedShutdown.desktop "$RELEASE_DIR/$APP_NAME-$VERSION/"
+cp data/in.rahulbali.TimedShutdown.desktop "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp build.sh "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp meson.build "$RELEASE_DIR/$APP_NAME-$VERSION/"
 cp -r src "$RELEASE_DIR/$APP_NAME-$VERSION/"
@@ -58,7 +58,7 @@ cat > "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh" << 'EOF'
 set -e
 
 APP_NAME="timed-shutdown"
-DESKTOP_FILE="data/com.example.TimedShutdown.desktop"
+DESKTOP_FILE="data/in.rahulbali.TimedShutdown.desktop"
 
 echo "Installing Timed Shutdown..."
 
@@ -87,7 +87,7 @@ cp "$APP_NAME" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/$APP_NAME"
 
 # Create desktop file with full path for desktop app integration
-cat > "$DESKTOP_DIR/com.example.TimedShutdown.desktop" << DESKTOP_EOF
+cat > "$DESKTOP_DIR/in.rahulbali.TimedShutdown.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Timed Shutdown
 Comment=Schedule system shutdown with countdown timer
