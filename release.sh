@@ -123,26 +123,6 @@ fi
 echo ""
 echo "Desktop Application Installed Successfully!"
 echo ""
-echo "Launch the app:"
-echo "   1. Press Super key (Windows key) and search 'Power Timer'"
-echo "   2. Or look in System/Utilities in your application menu"
-echo "   3. Click the app with the 8-bit power/clock icon"
-echo ""
-echo "Desktop Integration:"
-echo "   - App appears in applications menu with custom icon"
-echo "   - Modern GTK4/Adwaita interface with dropdown selection"
-echo "   - No terminal window required"
-echo ""
-if [ "$EUID" -ne 0 ]; then
-echo "Optional: Add to PATH for command line use:"
-echo "   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc"
-echo "   source ~/.bashrc"
-echo ""
-fi
-echo "Troubleshooting:"
-echo "   - If app not visible: Log out and back in"
-echo "   - Manual refresh: update-desktop-database \$DESKTOP_DIR"
-echo "   - Icon issues: gtk-update-icon-cache \$ICON_DIR/../.."
 EOF
 
 chmod +x "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh"
