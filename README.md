@@ -28,7 +28,7 @@ A modern GNOME application that schedules system power actions with a countdown 
 
 ### Download Pre-built Binary (Recommended)
 
-1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/timed-shutdown/releases)
+1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/power-timer/releases)
 2. **Extract** and install:
    ```bash
    tar -xzf timed-shutdown-2.0.0-linux-x86_64.tar.gz
@@ -59,8 +59,8 @@ sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
 
 #### Build Steps
 ```bash
-git clone https://github.com/snapfast/timed-shutdown.git
-cd timed-shutdown
+git clone https://github.com/snapfast/power-timer.git
+cd power-timer
 ./build.sh
 ```
 
@@ -135,7 +135,7 @@ Ensure you have appropriate permissions:
 
 ### Project Structure
 ```
-timed-shutdown/
+power-timer/
 ├── src/
 │   ├── main.c           # Main application entry
 │   ├── ui.c            # User interface creation
@@ -160,4 +160,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Issues
 
-Report bugs and request features on [GitHub Issues](https://github.com/snapfast/timed-shutdown/issues).
+Report bugs and request features on [GitHub Issues](https://github.com/snapfast/power-timer/issues).
