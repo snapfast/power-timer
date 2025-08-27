@@ -6,6 +6,8 @@ A modern GNOME application that schedules system power actions with a countdown 
 ![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
+![Power Timer Screenshot](data/Screenshot%20from%202025-08-27%2022-35-02.png)
+
 ## Features
 
 - **Modern Dropdown UI**: Clean GTK4 + Libadwaita interface with modern dropdown selection
