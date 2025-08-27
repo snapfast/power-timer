@@ -104,6 +104,11 @@ DESKTOP_EOF
 # Copy icon file
 cp "data/$ICON_NAME" "$ICON_DIR/"
 
+# Ensure hicolor theme index exists for icon cache
+if [ ! -f "${ICON_DIR%/scalable/apps}/index.theme" ] && [ -f "/usr/share/icons/hicolor/index.theme" ]; then
+    cp "/usr/share/icons/hicolor/index.theme" "${ICON_DIR%/scalable/apps}/"
+fi
+
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
