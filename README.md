@@ -3,7 +3,7 @@
 A modern GNOME application that schedules system shutdown with a countdown timer. Built with GTK4 and Libadwaita for a clean, native desktop experience.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-1.1.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.1.1-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
 ## Features
@@ -29,8 +29,8 @@ A modern GNOME application that schedules system shutdown with a countdown timer
 1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/timed-shutdown/releases)
 2. **Extract** and install:
    ```bash
-   tar -xzf timed-shutdown-1.1.0-linux-x86_64.tar.gz
-   cd timed-shutdown-1.1.0
+   tar -xzf timed-shutdown-1.1.1-linux-x86_64.tar.gz
+   cd timed-shutdown-1.1.1
    ./install.sh  # User install
    # OR
    sudo ./install.sh  # System-wide install
