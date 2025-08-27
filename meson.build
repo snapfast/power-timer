@@ -1,5 +1,5 @@
 project('power-timer', 'c',
-  version : '2.1.1',
+  version : '2.1.2',
   default_options : ['warning_level=2']
 )
 

@@ -1,5 +1,5 @@
-#ifndef TIMED_SHUTDOWN_H
-#define TIMED_SHUTDOWN_H
+#ifndef POWER_TIMER_H
+#define POWER_TIMER_H
 
 #include <gtk/gtk.h>
 #include <adwaita.h>

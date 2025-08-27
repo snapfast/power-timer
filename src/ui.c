@@ -128,6 +128,7 @@ GtkWidget* create_ui(AppData *app_data, AdwApplication *app) {
         ".display-1 { font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Courier New', monospace; font-size: 6em; font-weight: bold; color: #1a1a1a; }\n"
         "button { font-size: 1.2em; font-weight: 500; }\n"
         "spinbutton { font-size: 1.3em; }\n"
+        ".preferences-group { box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); border-radius: 12px; }\n"
         ".preferences-group > .header .title { font-size: 1.3em; font-weight: 600; color: #1a1a1a; }\n"
         ".preferences-group > .header .description { font-size: 1.1em; color: #1a1a1a; }\n"
         "row.activatable .title { font-size: 1.2em; font-weight: 500; color: #1a1a1a; }\n"

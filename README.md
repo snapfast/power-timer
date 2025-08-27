@@ -1,9 +1,13 @@
 # Power Timer
 
+<div align="center">
+  <img src="data/power-timer.svg" width="128" height="128" alt="Power Timer Logo">
+</div>
+
 A modern GNOME application that schedules system power actions with a countdown timer. Built with GTK4 and Libadwaita for a clean, native desktop experience.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-2.1.2-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
 ![Power Timer Screenshot](data/Screenshot%20from%202025-08-27%2022-35-02.png)
@@ -16,7 +20,7 @@ A modern GNOME application that schedules system power actions with a countdown 
 - **Large Countdown Display**: Live HH:MM:SS display with 6em monospace font (JetBrains Mono/Fira Code)
 - **Full Control**: Start, pause, resume, and cancel operations
 - **System Sound Integration**: Automatic sound notifications using system sounds (no custom files)
-- **Safety Confirmations**: Final confirmation dialog before executing power actions
+- **Automatic Execution**: Power actions execute automatically when timer expires (no confirmation required)
 - **Input Validation**: Prevents invalid timer settings (e.g., 0 hours and 0 minutes)
 - **Keyboard Shortcuts**: 
   - `Ctrl+Enter`: Start/pause timer
@@ -24,7 +28,6 @@ A modern GNOME application that schedules system power actions with a countdown 
   - `Ctrl+Q/W`: Quit application
 - **Safe Operations**: Uses systemd commands (`systemctl`, `loginctl`) for clean system actions
 - **Compact Interface**: Reduced spacing and 480px width for efficient screen usage
-- **User Warning**: Clear notification about closing the app canceling the timer
 
 ## Quick Install
 
@@ -33,8 +36,8 @@ A modern GNOME application that schedules system power actions with a countdown 
 1. **Download** the latest release from [GitHub Releases](https://github.com/snapfast/power-timer/releases)
 2. **Extract** and install:
    ```bash
-   tar -xzf power-timer-2.1.1-linux-x86_64.tar.gz
-   cd power-timer-2.1.1
+   tar -xzf power-timer-2.1.2-linux-x86_64.tar.gz
+   cd power-timer-2.1.2
    ./install.sh  # User install
    # OR
    sudo ./install.sh  # System-wide install
@@ -66,12 +69,6 @@ cd power-timer
 ./build.sh
 ```
 
-#### Install System-wide
-```bash
-cd build
-sudo ninja install
-```
-
 ## Usage
 
 ### Basic Operation
@@ -81,7 +78,7 @@ sudo ninja install
 4. **Monitor**: Watch the large real-time countdown in HH:MM:SS format with monospace font
 5. **Control**: Use "Pause"/"Resume" to pause/continue, or "Cancel" to abort
 6. **Sound Alert**: Automatic system sound notification in the last minute
-7. **Confirm Action**: When timer expires, confirm the action in the dialog that appears
+7. **Automatic Action**: When timer expires, the selected power action executes automatically
 
 ### Keyboard Shortcuts
 | Shortcut | Action |
@@ -103,62 +100,9 @@ sudo ninja install
 - **Permissions**: Ability to execute `systemctl poweroff`
 - **Architecture**: x86_64 (pre-built binaries)
 
-## Security & Permissions
-
-This application executes system commands to perform power actions:
-- **Shutdown**: `systemctl poweroff`
-- **Restart**: `systemctl reboot`
-- **Log off**: `loginctl terminate-user $USER`
-
-Ensure you have appropriate permissions:
-
-- **User install**: Your user account should be able to perform these system operations
-- **Groups**: You may need to be in `sudo` or `wheel` group depending on your distribution
-- **PolicyKit**: Modern systems use PolicyKit for power management permissions
-- **Safety**: All actions require final user confirmation before execution
-
-## What's New in v2.0.0
-
-- **Application renamed** from "Timed Shutdown" to "Power Timer"
-- **Modern dropdown interface** replacing radio buttons for cleaner selection
-- **Massive countdown display** with monospace font (50% larger at 6em)
-- **Horizontal time input** layout for better space utilization
-- **System sound integration** - no more custom sound files needed
-- **Compact UI design** with reduced spacing and smaller window (480px width)
-- **Warning message** about closing the application
-- **Modular code structure** with separate files for better maintainability
-
-## Development
-
-### Creating Releases
-```bash
-./release.sh [version]  # Creates distributable package
-```
-
-### Project Structure
-```
-power-timer/
-├── src/
-│   ├── main.c           # Main application entry
-│   ├── ui.c            # User interface creation
-│   ├── timer.c         # Timer logic and controls
-│   ├── sound.c         # System sound integration
-│   ├── power.c         # Power action execution
-│   └── power_timer.h # Header with shared definitions
-├── data/               # Desktop file and resources
-├── meson.build         # Build configuration  
-├── build.sh           # Development build script
-├── release.sh         # Release packaging script
-└── README.md          # This file
-```
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Issues
 
