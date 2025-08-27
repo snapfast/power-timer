@@ -13,6 +13,7 @@ typedef struct {
     guint timer_id;
     int remaining_seconds;
     gboolean is_counting;
+    gboolean sound_played;
 } AppData;
 
 static gboolean update_countdown(gpointer user_data) {
@@ -21,6 +22,16 @@ static gboolean update_countdown(gpointer user_data) {
     if (app->remaining_seconds <= 0) {
         system("systemctl poweroff");
         return G_SOURCE_REMOVE;
+    }
+    
+    // Play sound notification in the last minute (60 seconds)
+    if (app->remaining_seconds <= 60 && !app->sound_played) {
+        // Try multiple sound methods for compatibility
+        system("paplay /usr/share/sounds/alsa/Front_Left.wav 2>/dev/null || "
+               "aplay /usr/share/sounds/alsa/Front_Left.wav 2>/dev/null || "
+               "speaker-test -t sine -f 1000 -l 1 2>/dev/null || "
+               "echo -e '\\a' || true");
+        app->sound_played = TRUE;
     }
     
     int hours = app->remaining_seconds / 3600;
@@ -44,6 +55,7 @@ static void on_start_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_data
         int minutes = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(app->minute_spin));
         app->remaining_seconds = (hours * 3600) + (minutes * 60);
         app->is_counting = TRUE;
+        app->sound_played = FALSE;
         
         gtk_widget_set_sensitive(app->hour_spin, FALSE);
         gtk_widget_set_sensitive(app->minute_spin, FALSE);
@@ -68,6 +80,7 @@ static void on_cancel_clicked(GtkWidget *widget G_GNUC_UNUSED, gpointer user_dat
     
     app->is_counting = FALSE;
     app->remaining_seconds = 0;
+    app->sound_played = FALSE;
     
     gtk_widget_set_sensitive(app->hour_spin, TRUE);
     gtk_widget_set_sensitive(app->minute_spin, TRUE);
@@ -212,6 +225,7 @@ static void activate(AdwApplication *app, gpointer user_data G_GNUC_UNUSED) {
     gtk_widget_add_controller(app_data->window, key_controller);
     
     app_data->is_counting = FALSE;
+    app_data->sound_played = FALSE;
     
     gtk_window_present(GTK_WINDOW(app_data->window));
 }
