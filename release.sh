@@ -87,7 +87,7 @@ cp "$APP_NAME" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/$APP_NAME"
 
 # Create desktop file with full path for desktop app integration
-cat > "$DESKTOP_DIR/com.example.TimedShutdown.desktop" << EOF
+cat > "$DESKTOP_DIR/com.example.TimedShutdown.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Timed Shutdown
 Comment=Schedule system shutdown with countdown timer
@@ -97,7 +97,7 @@ Terminal=false
 Type=Application
 Categories=System;Utility;
 Keywords=shutdown;timer;schedule;
-EOF
+DESKTOP_EOF
 
 # Copy icon file
 cp "data/timed-shutdown.svg" "$ICON_DIR/"
@@ -121,28 +121,28 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "✅ Desktop Application Installed Successfully!"
+echo "Desktop Application Installed Successfully!"
 echo ""
-echo "📱 Launch the app:"
+echo "Launch the app:"
 echo "   1. Press Super key (Windows key) and search 'Timed Shutdown'"
 echo "   2. Or look in System/Utilities in your application menu"
 echo "   3. Click the app with the 8-bit power/clock icon"
 echo ""
-echo "🖥️  Desktop Integration:"
+echo "Desktop Integration:"
 echo "   - App appears in applications menu with custom icon"
 echo "   - Launches as native desktop application"
 echo "   - No terminal window required"
 echo ""
 if [ "$EUID" -ne 0 ]; then
-echo "💡 Optional: Add to PATH for command line use:"
+echo "Optional: Add to PATH for command line use:"
 echo "   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc"
 echo "   source ~/.bashrc"
 echo ""
 fi
-echo "🔧 Troubleshooting:"
+echo "Troubleshooting:"
 echo "   - If app not visible: Log out and back in"
-echo "   - Manual refresh: update-desktop-database $DESKTOP_DIR"
-echo "   - Icon issues: gtk-update-icon-cache $ICON_DIR/../.."
+echo "   - Manual refresh: update-desktop-database \$DESKTOP_DIR"
+echo "   - Icon issues: gtk-update-icon-cache \$ICON_DIR/../.."
 EOF
 
 chmod +x "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh"

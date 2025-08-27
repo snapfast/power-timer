@@ -6,7 +6,7 @@ A modern GNOME application that schedules system shutdown with a countdown timer
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 ![GTK](https://img.shields.io/badge/GTK-4.x-orange.svg)
 
-## ✨ Features
+## Features
 
 - **Modern UI**: Clean GTK4 + Libadwaita interface designed for GNOME
 - **Flexible Timer**: Set shutdown time from 1 minute to 23 hours 59 minutes
@@ -18,7 +18,7 @@ A modern GNOME application that schedules system shutdown with a countdown timer
   - `Ctrl+Q/W`: Quit application
 - **Safe Shutdown**: Uses `systemctl poweroff` for clean system shutdown
 
-## 📦 Quick Install
+## Quick Install
 
 ### Download Pre-built Binary (Recommended)
 
@@ -64,7 +64,7 @@ cd build
 sudo ninja install
 ```
 
-## 🚀 Usage
+## Usage
 
 ### Basic Operation
 1. **Set Time**: Use the hour and minute spinboxes to set your desired shutdown time
@@ -85,14 +85,14 @@ sudo ninja install
 - **Rendering**: Set 8 hours for overnight video rendering
 - **Energy saving**: Auto-shutdown after work hours
 
-## 📋 System Requirements
+## System Requirements
 
 - **OS**: Linux with systemd
 - **Desktop**: GNOME (recommended) or any GTK4-compatible environment  
 - **Permissions**: Ability to execute `systemctl poweroff`
 - **Architecture**: x86_64 (pre-built binaries)
 
-## 🔒 Security & Permissions
+## Security & Permissions
 
 This application executes `systemctl poweroff` to shutdown your system. Ensure you have appropriate permissions:
 
@@ -100,7 +100,7 @@ This application executes `systemctl poweroff` to shutdown your system. Ensure y
 - **Groups**: You may need to be in `sudo` or `wheel` group depending on your distribution
 - **PolicyKit**: Modern systems use PolicyKit for shutdown permissions
 
-## 🛠️ Development
+## Development
 
 ### Creating Releases
 ```bash
@@ -118,14 +118,14 @@ timed-shutdown/
 └── README.md          # This file
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 🐛 Issues
+## Issues
 
 Report bugs and request features on [GitHub Issues](https://github.com/snapfast/timed-shutdown/issues).
