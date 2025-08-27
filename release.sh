@@ -67,32 +67,39 @@ if [ "$EUID" -eq 0 ]; then
     # System-wide installation
     INSTALL_DIR="/usr/local/bin"
     DESKTOP_DIR="/usr/share/applications"
+    ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
     echo "Installing system-wide to $INSTALL_DIR"
 else
     # User installation
     INSTALL_DIR="$HOME/.local/bin"
     DESKTOP_DIR="$HOME/.local/share/applications"
+    ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
     echo "Installing for current user to $INSTALL_DIR"
     
     # Create directories if they don't exist
     mkdir -p "$INSTALL_DIR"
     mkdir -p "$DESKTOP_DIR"
+    mkdir -p "$ICON_DIR"
 fi
 
 # Copy binary
 cp "$APP_NAME" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/$APP_NAME"
 
-# Copy desktop file
-cp "$DESKTOP_FILE" "$DESKTOP_DIR/"
+# Create desktop file with full path for desktop app integration
+cat > "$DESKTOP_DIR/com.example.TimedShutdown.desktop" << EOF
+[Desktop Entry]
+Name=Timed Shutdown
+Comment=Schedule system shutdown with countdown timer
+Exec=$INSTALL_DIR/$APP_NAME
+Icon=timed-shutdown
+Terminal=false
+Type=Application
+Categories=System;Utility;
+Keywords=shutdown;timer;schedule;
+EOF
 
 # Copy icon file
-if [ "$EUID" -eq 0 ]; then
-    ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
-else
-    ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
-fi
-mkdir -p "$ICON_DIR"
 cp "data/timed-shutdown.svg" "$ICON_DIR/"
 
 # Update desktop database
@@ -113,9 +120,29 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1; then
     fi
 fi
 
-echo "Installation complete!"
-echo "You can now run '$APP_NAME' from the command line"
-echo "or find 'Timed Shutdown' in your applications menu."
+echo ""
+echo "✅ Desktop Application Installed Successfully!"
+echo ""
+echo "📱 Launch the app:"
+echo "   1. Press Super key (Windows key) and search 'Timed Shutdown'"
+echo "   2. Or look in System/Utilities in your application menu"
+echo "   3. Click the app with the 8-bit power/clock icon"
+echo ""
+echo "🖥️  Desktop Integration:"
+echo "   - App appears in applications menu with custom icon"
+echo "   - Launches as native desktop application"
+echo "   - No terminal window required"
+echo ""
+if [ "$EUID" -ne 0 ]; then
+echo "💡 Optional: Add to PATH for command line use:"
+echo "   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc"
+echo "   source ~/.bashrc"
+echo ""
+fi
+echo "🔧 Troubleshooting:"
+echo "   - If app not visible: Log out and back in"
+echo "   - Manual refresh: update-desktop-database $DESKTOP_DIR"
+echo "   - Icon issues: gtk-update-icon-cache $ICON_DIR/../.."
 EOF
 
 chmod +x "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh"
