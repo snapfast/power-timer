@@ -15,3 +15,7 @@ executable('timed-shutdown',
 install_data('data/com.example.TimedShutdown.desktop',
   install_dir : join_paths(get_option('datadir'), 'applications')
 )
+
+install_data('data/timed-shutdown.svg',
+  install_dir : join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps')
+)

@@ -86,12 +86,30 @@ chmod +x "$INSTALL_DIR/$APP_NAME"
 # Copy desktop file
 cp "$DESKTOP_FILE" "$DESKTOP_DIR/"
 
+# Copy icon file
+if [ "$EUID" -eq 0 ]; then
+    ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
+else
+    ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
+fi
+mkdir -p "$ICON_DIR"
+cp "data/timed-shutdown.svg" "$ICON_DIR/"
+
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then
     if [ "$EUID" -eq 0 ]; then
         update-desktop-database /usr/share/applications
     else
         update-desktop-database "$HOME/.local/share/applications"
+    fi
+fi
+
+# Update icon cache
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    if [ "$EUID" -eq 0 ]; then
+        gtk-update-icon-cache -f /usr/share/icons/hicolor
+    else
+        gtk-update-icon-cache -f "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
     fi
 fi
 

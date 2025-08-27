@@ -2,7 +2,7 @@
 Name=Timed Shutdown
 Comment=Schedule system shutdown with countdown timer
 Exec=timed-shutdown
-Icon=system-shutdown
+Icon=timed-shutdown
 Terminal=false
 Type=Application
 Categories=System;Utility;
