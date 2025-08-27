@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Timed Shutdown
-Comment=Schedule system shutdown with countdown timer
+Name=Power Timer
+Comment=Schedule system power actions with countdown timer
 Exec=timed-shutdown
 Icon=timed-shutdown
 Terminal=false
 Type=Application
 Categories=System;Utility;
-Keywords=shutdown;timer;schedule;
+Keywords=power;timer;shutdown;restart;schedule;

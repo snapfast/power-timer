@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Build script for Timed Shutdown application
+# Build script for Power Timer application
 
 set -e
 
-echo "Building Timed Shutdown..."
+echo "Building Power Timer..."
 
 # Create build directory
 if [ ! -d "build" ]; then

@@ -7,7 +7,7 @@ gtk4_dep = dependency('gtk4')
 adwaita_dep = dependency('libadwaita-1')
 
 executable('timed-shutdown',
-  'src/main.c',
+  ['src/main.c', 'src/ui.c', 'src/timer.c', 'src/sound.c', 'src/power.c'],
   dependencies : [gtk4_dep, adwaita_dep],
   install : true
 )
@@ -20,6 +20,3 @@ install_data('data/timed-shutdown.svg',
   install_dir : join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps')
 )
 
-install_data('data/mixkit-forest-birds-singing-1212.wav',
-  install_dir : join_paths(get_option('datadir'), 'timed-shutdown')
-)
