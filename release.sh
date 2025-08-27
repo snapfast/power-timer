@@ -57,41 +57,43 @@ cat > "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh" << 'EOF'
 
 set -e
 
+# Application variables
 APP_NAME="power-timer"
-DESKTOP_FILE="data/in.rahulbali.PowerTimer.desktop"
+DESKTOP_ID="in.rahulbali.PowerTimer"
+ICON_NAME="power-timer.svg"
 
 echo "Installing Power Timer..."
 
 # Check if running as root for system-wide installation
 if [ "$EUID" -eq 0 ]; then
     # System-wide installation
-    INSTALL_DIR="/usr/local/bin"
+    BIN_DIR="/usr/local/bin"
     DESKTOP_DIR="/usr/share/applications"
     ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
-    echo "Installing system-wide to $INSTALL_DIR"
+    echo "Installing system-wide to $BIN_DIR"
 else
     # User installation
-    INSTALL_DIR="$HOME/.local/bin"
+    BIN_DIR="$HOME/.local/bin"
     DESKTOP_DIR="$HOME/.local/share/applications"
     ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
-    echo "Installing for current user to $INSTALL_DIR"
+    echo "Installing for current user to $BIN_DIR"
     
     # Create directories if they don't exist
-    mkdir -p "$INSTALL_DIR"
+    mkdir -p "$BIN_DIR"
     mkdir -p "$DESKTOP_DIR"
     mkdir -p "$ICON_DIR"
 fi
 
 # Copy binary
-cp "$APP_NAME" "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/$APP_NAME"
+cp "$APP_NAME" "$BIN_DIR/"
+chmod +x "$BIN_DIR/$APP_NAME"
 
 # Create desktop file with full path for desktop app integration
-cat > "$DESKTOP_DIR/in.rahulbali.PowerTimer.desktop" << DESKTOP_EOF
+cat > "$DESKTOP_DIR/$DESKTOP_ID.desktop" << DESKTOP_EOF
 [Desktop Entry]
 Name=Power Timer
 Comment=Schedule system power actions with countdown timer
-Exec=$INSTALL_DIR/$APP_NAME
+Exec=$BIN_DIR/$APP_NAME
 Icon=power-timer
 Terminal=false
 Type=Application
@@ -100,24 +102,16 @@ Keywords=power;timer;shutdown;restart;schedule;
 DESKTOP_EOF
 
 # Copy icon file
-cp "data/power-timer.svg" "$ICON_DIR/"
+cp "data/$ICON_NAME" "$ICON_DIR/"
 
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then
-    if [ "$EUID" -eq 0 ]; then
-        update-desktop-database /usr/share/applications
-    else
-        update-desktop-database "$HOME/.local/share/applications"
-    fi
+    update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
 fi
 
 # Update icon cache
 if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    if [ "$EUID" -eq 0 ]; then
-        gtk-update-icon-cache -f /usr/share/icons/hicolor
-    else
-        gtk-update-icon-cache -f "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
-    fi
+    gtk-update-icon-cache -f "${ICON_DIR%/scalable/apps}" 2>/dev/null || true
 fi
 
 echo ""
@@ -126,6 +120,60 @@ echo ""
 EOF
 
 chmod +x "$RELEASE_DIR/$APP_NAME-$VERSION/install.sh"
+
+# Create uninstall script
+cat > "$RELEASE_DIR/$APP_NAME-$VERSION/uninstall.sh" << 'EOF'
+#!/bin/bash
+
+# Power Timer Uninstall Script
+set -e
+
+# Application variables (must match install.sh)
+APP_NAME="power-timer"
+DESKTOP_ID="in.rahulbali.PowerTimer"
+ICON_NAME="power-timer.svg"
+
+echo "Removing Power Timer..."
+read -p "Are you sure? [y/N]: " -n 1 -r
+echo
+[[ ! $REPLY =~ ^[Yy]$ ]] && { echo "Cancelled."; exit 0; }
+
+# Check installation locations
+for install_type in "system" "user"; do
+    if [ "$install_type" = "system" ]; then
+        BIN_DIR="/usr/local/bin"
+        DESKTOP_DIR="/usr/share/applications"
+        ICON_DIR="/usr/share/icons/hicolor/scalable/apps"
+        USE_SUDO="sudo"
+    else
+        BIN_DIR="$HOME/.local/bin"
+        DESKTOP_DIR="$HOME/.local/share/applications"
+        ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
+        USE_SUDO=""
+    fi
+    
+    binary="$BIN_DIR/$APP_NAME"
+    desktop="$DESKTOP_DIR/$DESKTOP_ID.desktop"
+    icon="$ICON_DIR/$ICON_NAME"
+    
+    if [[ -f "$binary" || -f "$desktop" || -f "$icon" ]]; then
+        echo "Found $install_type installation"
+        
+        # Remove files
+        $USE_SUDO rm -f "$binary" "$desktop" "$icon"
+        
+        # Update caches
+        $USE_SUDO gtk-update-icon-cache -f "${ICON_DIR%/scalable/apps}" 2>/dev/null || true
+        $USE_SUDO update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
+        
+        echo "Uninstalled $install_type installation"
+    fi
+done
+
+echo "Power Timer removed successfully."
+EOF
+
+chmod +x "$RELEASE_DIR/$APP_NAME-$VERSION/uninstall.sh"
 
 # Create tarball
 cd "$RELEASE_DIR"
